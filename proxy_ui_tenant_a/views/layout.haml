@@ -1,0 +1,12 @@
+%h1 Tenant App A
+
+%ul.nav.nav-pills
+  %li{class: "#{is_active('/')}"}
+    %a{:href => "/"} Tenant A Home
+  %li{class: "#{is_active('/awesome/stuff')}"}
+    %a{:href => "/awesome/stuff"} Awesome Stuff
+  %li{class: "#{is_active('/even/better/stuff')}"}
+    %a{:href => "/even/better/stuff"} Even Better Stuff
+
+.container
+  = yield
