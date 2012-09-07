@@ -34,7 +34,8 @@ def render_index(proxy_ui_namespace, tenants, uri)
 
     tenant_urls = decode_url(@tenants, uri)
 
-    tenant_urls.each do |tenant, tenant_url|
+    @tenants.each do |tenant|
+      tenant_url = tenant_urls[tenant] || TENANT_HOSTS[tenant]
       @content[tenant] = RestClient.get(tenant_url, params: params).to_s
     end
 
