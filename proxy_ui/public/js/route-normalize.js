@@ -11,7 +11,7 @@ $(function() {
   $(window.tenants).each(function(index, tenant) {
     $('#' + tenant + ' a').each(function(index, elem) {
       var href = $(elem).prop('href');
-      $(elem).prop('href', '/' + tenant + '/' + parseUrl(href).join('/'));
+      $(elem).prop('href', '/' + window.proxy_ui_namespace + '/--' + tenant + '/' + parseUrl(href).join('/'));
     });
   });
 

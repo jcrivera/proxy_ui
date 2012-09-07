@@ -1,0 +1,4 @@
+%div{id: "#{@proxy_ui_namespace}"}
+  - @tenants.each do |tenant|
+    %div{id: "#{tenant}"}
+      = @content[tenant]

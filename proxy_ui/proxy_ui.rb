@@ -32,23 +32,37 @@ def render_index(proxy_ui_namespace, tenants, uri)
 
     @content = {}
 
-    @tenants.each do |tenant|
-      @content[tenant] = RestClient.get(tenant_uri(tenant, uri), params: params).to_s
+    tenant_urls = decode_url(@tenants, uri)
+
+    tenant_urls.each do |tenant, tenant_url|
+      @content[tenant] = RestClient.get(tenant_url, params: params).to_s
     end
 
-    haml @proxy_ui_namespace.to_sym, :format => :html5
+    haml :tenants, :format => :html5
   rescue Errno::ECONNREFUSED, RestClient::ResourceNotFound
     haml :four_oh_four
   end
 end
 
-TENANTS = {
+TENANT_HOSTS = {
   'tenant_a' => 'http://localhost:9494',
   'tenant_b' => 'http://localhost:9595'
 }
 
-def tenant_uri(namespace, uri)
-  TENANTS[namespace] + uri
+def decode_url(tenants, uri)
+  res = {}
+  tenant_paths = uri.split('--')
+  tenant_paths.shift
+  tenant_paths.each do |path|
+    path_parts = path.split('/')
+    tenant_name = path_parts.shift
+    res[tenant_name] = tenant_uri(tenant_name, path_parts.join('/'))
+  end
+  res
+end
+
+def tenant_uri(tenant, uri)
+  "#{TENANT_HOSTS[tenant]}/#{uri}"
 end
 
 def is_active(link)
