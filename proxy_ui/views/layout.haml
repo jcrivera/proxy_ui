@@ -11,9 +11,10 @@
     /[if lt IE 9]
       %script{src: "http://html5shim.googlecode.com/svn/trunk/html5.js"}
 
-  :javascript
-    window.proxy_ui_host = "#{@request_host}";
-    window.namespace = "#{@namespace}";
+  - if @request_host && @tenants
+    :javascript
+      window.proxy_ui_host = "#{@request_host}";
+      window.tenants = ['#{@tenants.join("','")}'];
 
   %script{:src => "https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"}
   %script{:src => "/js/bootstrap.min.js"}
