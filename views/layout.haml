@@ -40,6 +40,8 @@
               %a{:href => "/tenant_b/"} Tenant App B
             %li{:class => "#{is_active('tenant_a_tenant_b')}"}
               %a{:href => "/tenant_a_and_b"} Tenant A and B
+            %li{:class => "#{is_active('tenant_crud')}"}
+              %a{:href => "/tenant_crud"} Tenant Crud
 
   #proxy-ui.container
     = yield

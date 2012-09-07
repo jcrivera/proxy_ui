@@ -24,6 +24,21 @@ get /\/tenant_b\/?(.*)/ do |uri|
   render_index('tenant_b', ['tenant_b'], uri)
 end
 
+get /\/tenant_crud\/?(.*)/ do |uri|
+  render_index('tenant_crud', ['tenant_crud'], uri)
+end
+
+post /\/tenant_crud\/?(.*)/ do |uri|
+  tenant_urls = decode_url(@tenants, uri)
+  RestClient.post(tenant_urls['tenant_crud'], params) do |response, request, result, &block|
+    if [301, 302, 307].include? response.code
+      response.follow_redirection(request, result, &block)
+    else
+      response.return!(request, result, &block)
+    end
+  end
+end
+
 def render_index(proxy_ui_namespace, tenants, uri)
   begin
     @request_host = request.host
@@ -47,7 +62,8 @@ end
 
 TENANT_HOSTS = {
   'tenant_a' => 'http://localhost:9494',
-  'tenant_b' => 'http://localhost:9595'
+  'tenant_b' => 'http://localhost:9595',
+  'tenant_crud' => 'http://localhost:9696'
 }
 
 def decode_url(tenants, uri)

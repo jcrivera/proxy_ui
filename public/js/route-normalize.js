@@ -1,4 +1,4 @@
-window.parseHref = function(url) {
+window.parseUrl = function(url) {
   var parsed_url = url.split(window.proxy_ui_host)[1].split('/');
   parsed_url.shift();
   return parsed_url.join('/')
@@ -17,12 +17,25 @@ window.parseLocation = function() {
 }
 
 window.needsRewrite = function(elem) {
-  console.log($(elem).attr('href').match(/^#/));
-  if($(elem).attr('href').match(/^#/)) {
-    console.log('yes');
+  if($(elem[0]).attr(elem[1]).match(/^#/)) {
     return false
   }
   return true
+}
+
+window.rewriteLinks = function(tenant) {
+  var tenant_id = '#' + tenant
+  var rewrite_links = []
+
+  $(tenant_id + ' a').each(function(index, elem) {
+    rewrite_links.push([elem, 'href']);
+  });
+
+  $(tenant_id + ' form').each(function(index, elem) {
+    rewrite_links.push([elem, 'action']);
+  });
+
+  return rewrite_links
 }
 
 //http://localhost:9393/tenant_a_and_b/--/tenant_b//--/0/[object%20Object]
@@ -43,22 +56,22 @@ $(function() {
     });
 
     // rewrite links for each tenant
-    $('#' + tenant + ' a').each(function(index, elem) {
+    $.each(window.rewriteLinks(tenant), function(index, elem) {
       if(window.needsRewrite(elem)) {
-        var href = $(elem).prop('href');
-        var parsedHref = parseHref(href);
+        var _url = $(elem[0]).prop(elem[1]);
+        var parsed_url = parseUrl(_url);
 
         // if the link is to the root (/) of the tenant then ommit it
-        // from the href
+        // from the url
         var new_path = ''
-        if(parsedHref != '') {
-          new_path = ['--' + tenant, parsedHref].join('/');
+        if(parsed_url != '') {
+          new_path = ['--' + tenant, parsed_url].join('/');
         }
 
-        // construct the new href that includes the current path (state) of all other tenants
-        var new_href = '/' + [window.proxy_ui_namespace, new_path, sibling_tenant_paths].join('/');
-        new_href = new_href.replace('//', '/');
-        $(elem).prop('href', new_href);
+        // construct the new url that includes the current path (state) of all other tenants
+        var new_url = '/' + [window.proxy_ui_namespace, new_path, sibling_tenant_paths].join('/');
+        new_url = new_url.replace('//', '/');
+        $(elem[0]).prop(elem[1], new_url);
       }
     });
   });
